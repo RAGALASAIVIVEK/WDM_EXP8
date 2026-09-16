@@ -1,6 +1,6 @@
 ### EX8 Web Scraping On E-commerce platform using BeautifulSoup
-### DATE: 23/05/26
-### NAME & REG NO : RAGALA SAI VIVEK - 212223230163
+### DATE: 28/08/2026
+### REG NO : 212223230163
 ### AIM: To perform Web Scraping on Amazon using (beautifulsoup) Python.
 ### Description: 
 <div align = "justify">
@@ -26,7 +26,8 @@ One can search, navigate, and modify data using a parser. It’s versatile and s
 8) Visualize Product Data using a Bar Chart
 
 ### Program:
-```PYTHON
+```
+   
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -37,76 +38,55 @@ def convert_price_to_float(price):
     price = re.sub(r'[^\d.]', '', price)
     return float(price) if price else 0.0
 
-
 def get_amazon_products(search_query):
-
     base_url = 'https://www.amazon.in'
-
     headers = {
-        'User-Agent': 'Mozilla/4.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36'
     }
 
     search_query = search_query.replace(' ', '+')
-
     url = f'{base_url}/s?k={search_query}'
 
     response = requests.get(url, headers=headers)
-
     products_data = []
 
     if response.status_code == 200:
-
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        products = soup.find_all(
-            'div',
-            {'data-component-type': 's-search-result'}
-        )
+        products = soup.find_all('div', {'data-component-type': 's-search-result'})
 
         for product in products:
+            name_tag = product.find('h2')
+            price_tag = product.find('span', class_='a-price-whole')
 
-            title = product.h2.text.strip() if product.h2 else 'N/A'
+            if name_tag and price_tag:
+                product_name = name_tag.get_text(strip=True)
+                product_price = price_tag.get_text(strip=True)
 
-            price_whole = product.find(
-                'span',
-                class_='a-price-whole'
-            )
+                products_data.append({
+                    'Product': product_name,
+                    'Price': product_price
+                })
 
-            if price_whole:
-                price = price_whole.text.strip()
-            else:
-                price = '0'
-
-            products_data.append({
-                'Product': title,
-                'Price': price
-            })
-
-    return sorted(
-        products_data,
-        key=lambda x: convert_price_to_float(x['Price'])
-    )
+    return sorted(products_data, key=lambda x: convert_price_to_float(x['Price']))
 
 
 search_query = input('Enter product to search on Amazon: ')
-
 products = get_amazon_products(search_query)
 
-# Display product names and prices
+# Display product data
 if products:
+    print("\nProducts found:")
+    print("-" * 70)
 
-    print("\nProducts Found:\n")
-
-    for i, product in enumerate(products, start=1):
-
-        print(f"{i}. Product Name : {product['Product']}")
-        print(f"   Price        : ₹{product['Price']}")
-        print("-----------------------------------")
+    for product in products:
+        print(f"Product: {product['Product']}")
+        print(f"Price: ₹{product['Price']}")
+        print("-" * 70)
 
     # Displaying product data using a bar chart
     product_names = [
-        product['Product'][:30]
-        if len(product['Product']) > 30
+        product['Product'][:30] if len(product['Product']) > 30
         else product['Product']
         for product in products
     ]
@@ -117,16 +97,14 @@ if products:
     ]
 
     plt.figure(figsize=(10, 6))
-
     plt.barh(
         range(len(product_prices)),
         product_prices,
-        color='skyblue'
+        color='blue'
     )
 
     plt.xlabel('Price')
     plt.ylabel('Product')
-
     plt.title(
         f'Products and their Prices on Amazon for '
         f'{search_query.capitalize()} (Ascending Order)'
@@ -142,16 +120,19 @@ if products:
 
 else:
     print('No products found.')
+
+
+
+
 ```
 
 ### Output:
 
-<img width="1721" height="506" alt="Screenshot 2026-05-15 192635" src="https://github.com/user-attachments/assets/1f8ccee7-5a3c-4b26-b737-66300ac98261" />
+<img width="935" height="562" alt="image" src="https://github.com/user-attachments/assets/157a16bc-0c03-470c-a8aa-f80253338cf4" />
+<img width="937" height="565" alt="image" src="https://github.com/user-attachments/assets/d0e6d33b-20e0-4667-8e67-00135210ba67" />
 
-
-<img width="989" height="590" alt="download (10)" src="https://github.com/user-attachments/assets/6e4ca893-34a8-4185-9c03-b1dd2aae0cbc" />
-
+<img width="792" height="471" alt="image" src="https://github.com/user-attachments/assets/66b35b54-fb07-4d16-be1c-3b5fee41ad2b" />
 
 ### Result:
 
-Thus, web scraping on an e-commerce platform using BeautifulSoup was successfully implemented in Python to extract product details such as names and prices and display them in a structured format for analysis.
+Thus, We had Successfully implemented the Web Scraping on a E-commerce platform using (beautifulsoup) Python.
